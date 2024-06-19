@@ -1,11 +1,43 @@
 package main
 
 import (
-	"fmt"
 	"go_url_short/internal/config"
+	"log/slog"
+	"os"
 )
 
 func main() {
 	cfg := config.MustLoad()
-	fmt.Println(cfg)
+
+	log := setupLogger(cfg.Env)
+
+	log.Info("starting loggin go_url_short", slog.String("env:", cfg.Env))
+	log.Debug("debug messages are enabled")
+}
+
+func setupLogger(env string) *slog.Logger {
+	var log *slog.Logger
+
+	switch env {
+	case "local":
+		{
+			log = slog.New(
+				slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelDebug}),
+			)
+		}
+	case "dev":
+		{
+			log = slog.New(
+				slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelDebug}),
+			)
+		}
+	case "prod":
+		{
+			log = slog.New(
+				slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelInfo}),
+			)
+		}
+	}
+
+	return log
 }
