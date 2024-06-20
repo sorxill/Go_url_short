@@ -27,7 +27,7 @@ func MustLoad() *Config {
 	}
 
 	cfg.Env = os.Getenv("ENV")
-	cfg.Storage = os.Getenv("STORAGE")
+	cfg.Storage = os.Getenv("STORAGE_PATH")
 	cfg.Address = os.Getenv("ADDRESS")
 
 	timeout, err := time.ParseDuration(os.Getenv("TIMEOUT"))
