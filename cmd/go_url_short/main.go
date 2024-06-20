@@ -2,6 +2,7 @@ package main
 
 import (
 	"go_url_short/internal/config"
+	"go_url_short/internal/storage/sqlite"
 	"log/slog"
 	"os"
 )
@@ -13,6 +14,14 @@ func main() {
 
 	log.Info("starting loggin go_url_short", slog.String("env:", cfg.Env))
 	log.Debug("debug messages are enabled")
+
+	storage, err := sqlite.New(cfg.Storage)
+	if err != nil {
+		log.Error("failed to init storage", err)
+		os.Exit(1)
+	}
+
+	_ = storage
 }
 
 func setupLogger(env string) *slog.Logger {
