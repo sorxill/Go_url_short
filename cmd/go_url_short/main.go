@@ -2,8 +2,10 @@ package main
 
 import (
 	"go_url_short/internal/config"
+	save "go_url_short/internal/http_server/handlers/url"
 	"go_url_short/internal/storage/sqlite"
 	"log/slog"
+	"net/http"
 	"os"
 
 	"github.com/go-chi/chi/v5"
@@ -33,9 +35,27 @@ func main() {
 	router.Use(middleware.Recoverer)
 	router.Use(middleware.URLFormat)
 
+	router.Post("/url", save.New(log, storage))
+
+	log.Info("starting server", slog.String("address", cfg.Address))
+
+	srv := &http.Server{
+		Addr:         cfg.Address,
+		Handler:      router,
+		ReadTimeout:  cfg.Timeout,
+		WriteTimeout: cfg.Timeout,
+		IdleTimeout:  cfg.IdleTimeout,
+	}
+
+	if err := srv.ListenAndServe(); err != nil {
+		log.Error("failed to start server")
+	}
+
+	log.Error("server stopped")
+
 }
 
-func setupLogger(env string) *slog.Logger { 
+func setupLogger(env string) *slog.Logger {
 	var log *slog.Logger
 
 	switch env {
