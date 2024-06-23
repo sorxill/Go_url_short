@@ -21,19 +21,8 @@ func main() {
 		os.Exit(1)
 	}
 
-	err_save_url := storage.SaveURL("https://google.com", "goofle")
-	if err_save_url != nil {
-		log.Error("failed to save url", slog.Any("storage save url error:", err_save_url))
-		os.Exit(1)
-	}
-
-	err_save_url = storage.SaveURL("https://google.com", "goofle")
-	if err_save_url != nil {
-		log.Error("failed to save url", slog.Any("storage save url error:", err_save_url))
-		os.Exit(1)
-	}
-
 	_ = storage
+
 }
 
 func setupLogger(env string) *slog.Logger {

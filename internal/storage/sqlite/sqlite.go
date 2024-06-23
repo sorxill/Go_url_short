@@ -2,6 +2,7 @@ package sqlite
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 	"go_url_short/internal/storage"
 
@@ -61,4 +62,47 @@ func (s *Storage) SaveURL(urlToSave string, alias string) error {
 	}
 
 	return nil
+}
+
+func (s *Storage) GetURL(alias string) (string, error) {
+	const op = "storage.sqlite.GetURL"
+
+	stmt, err := s.db.Prepare("SELECT url FROM url WHERE alias = ?")
+	if err != nil {
+		return "", fmt.Errorf("%s: %w", op, err)
+	}
+
+	var resultURL string
+
+	err = stmt.QueryRow(alias).Scan(&resultURL)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return "", storage.ErrURLNotFound
+		}
+		return "", fmt.Errorf("%s: execute alias not found: %w", op, err)
+	}
+
+	return resultURL, nil
+}
+
+func (s *Storage) DeleteUrl(alias string) error {
+	const op = "storage.sqlite.DeleteURL"
+
+	stmt, err := s.db.Prepare("DELETE FROM url WHERE alias = ?")
+	if err != nil {
+		return fmt.Errorf("%s: %w", op, err)
+	}
+
+	_, err = stmt.Exec(alias)
+
+	if err != nil {
+		if errors.Is(err, storage.ErrURLNotFound) {
+			return storage.ErrURLNotFound
+		}
+
+		return fmt.Errorf("%s: %w", op, err)
+	}
+
+	return nil
+
 }
