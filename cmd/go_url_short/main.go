@@ -2,7 +2,7 @@ package main
 
 import (
 	"go_url_short/internal/config"
-	save "go_url_short/internal/http_server/handlers/url"
+	url "go_url_short/internal/http_server/handlers/url"
 	"go_url_short/internal/storage/sqlite"
 	"log/slog"
 	"net/http"
@@ -35,7 +35,8 @@ func main() {
 	router.Use(middleware.Recoverer)
 	router.Use(middleware.URLFormat)
 
-	router.Post("/url", save.New(log, storage))
+	router.Post("/url", url.SaveNew(log, storage))
+	router.Get("/{alias}", url.GetNew(log, storage))
 
 	log.Info("starting server", slog.String("address", cfg.Address))
 
