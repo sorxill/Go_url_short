@@ -1,4 +1,4 @@
-package save
+package url
 
 import (
 	"errors"
@@ -29,7 +29,7 @@ type URLSaver interface {
 	SaveURL(urlToSave string, alias string) error
 }
 
-func New(log *slog.Logger, urlSaver URLSaver) http.HandlerFunc {
+func SaveNew(log *slog.Logger, urlSaver URLSaver) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const op = "handlers.url.save.New"
 
